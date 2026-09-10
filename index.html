@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phiếu Thử Thách Trượt Ván</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --asphalt: #121212;
+    --asphalt-2: #1a1a1a;
+    --deck: #1e1e1e;
+    --chalk: #ece7dd;
+    --chalk-dim: #a9a49a;
+    --spray: #d6ff3f;
+    --spray-dim: #9fbf2c;
+    --line: #2c2c2c;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html, body{
+    min-height: 100%;
+  }
+
+  body{
+    background:
+      radial-gradient(circle at 1.5px 1.5px, rgba(236,231,221,0.05) 1px, transparent 1px) 0 0/14px 14px,
+      var(--asphalt);
+    color: var(--chalk);
+    font-family: 'Inter', sans-serif;
+    display:flex;
+    justify-content:center;
+    padding: 48px 20px 80px;
+  }
+
+  .wrap{
+    width:100%;
+    max-width: 460px;
+  }
+
+  header{
+    margin-bottom: 32px;
+  }
+
+  .eyebrow{
+    font-size: 13px;
+    color: var(--spray);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  h1{
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: clamp(38px, 9vw, 54px);
+    line-height: 0.92;
+    letter-spacing: 0.01em;
+    margin-top: 6px;
+    color: var(--chalk);
+  }
+
+  h1 span{
+    color: var(--spray);
+  }
+
+  .sub{
+    margin-top: 14px;
+    color: var(--chalk-dim);
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 38ch;
+  }
+
+  .roll-btn{
+    margin-top: 28px;
+    width: 100%;
+    background: var(--spray);
+    color: #121212;
+    border: none;
+    border-radius: 3px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .roll-btn:hover{ background: #e4ff6e; }
+  .roll-btn:active{ transform: scale(0.98); }
+
+  .roll-btn:disabled{
+    opacity: 0.5;
+    cursor: default;
+    transform: none;
+  }
+
+  .ticket{
+    margin-top: 36px;
+    background: var(--deck);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .ticket-head{
+    padding: 16px 20px;
+    border-bottom: 1px dashed var(--line);
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .ticket-head .label{
+    font-size: 12px;
+    color: var(--chalk-dim);
+    font-weight: 600;
+  }
+
+  .ticket-head .count{
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    color: var(--spray);
+  }
+
+  .slot{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(6px);
+    animation: appear 0.35s ease forwards;
+  }
+
+  .slot:last-child{ border-bottom: none; }
+
+  @keyframes appear{
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .slot-num{
+    font-family: 'Anton', sans-serif;
+    font-size: 22px;
+    color: var(--spray-dim);
+    width: 28px;
+    flex-shrink: 0;
+  }
+
+  .slot-name{
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--chalk);
+  }
+
+  .empty{
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--chalk-dim);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  footer{
+    margin-top: 20px;
+    text-align:center;
+    color: var(--chalk-dim);
+    font-size: 12.5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">SESSION HÔM NAY</div>
+    <div><h1>QUAY <span>5</span></h1><br><h1>THỬ THÁCH</h1></div>
+    <!-- <h1>QUAY <span>5</span><br>THỬ THÁCH</h1> -->
+    <p class="sub">10 kỹ thuật, bốc ngẫu nhiên 5 cái không trùng. Xong hết thì ra bãi tập luôn.</p>
+  </header>
+
+  <button class="roll-btn" id="rollBtn">Bốc thử thách</button>
+
+  <div class="ticket">
+    <div class="ticket-head">
+      <span class="label">DANH SÁCH THỬ THÁCH</span>
+      <span class="count" id="countLabel">0/5</span>
+    </div>
+    <div id="results">
+      <div class="empty">Chưa có gì cả — bấm "Bốc thử thách" để bắt đầu.</div>
+    </div>
+  </div>
+
+  <footer>Không lặp lại kỹ thuật trong cùng một phiếu.</footer>
+</div>
+
+<script>
+  const TRICKS = [
+    "Ollie",
+    "Fakie ollie",
+    "Fs 180",
+    "Bs revert",
+    "Half cab",
+    "Manual + Pop shuv",
+    "Fingerflip",
+    "Nc 180",
+    "Tailslide",
+    "Cave man"
+  ];
+
+  const rollBtn = document.getElementById('rollBtn');
+  const results = document.getElementById('results');
+  const countLabel = document.getElementById('countLabel');
+
+  function pickFive() {
+    const pool = [...TRICKS];
+    const picked = [];
+    for (let i = 0; i < 5; i++) {
+      const idx = Math.floor(Math.random() * pool.length);
+      picked.push(pool[idx]);
+      pool.splice(idx, 1);
+    }
+    return picked;
+  }
+
+  function render(picks) {
+    results.innerHTML = '';
+    picks.forEach((trick, i) => {
+      const row = document.createElement('div');
+      row.className = 'slot';
+      row.style.animationDelay = (i * 70) + 'ms';
+      row.innerHTML = `<span class="slot-num">${String(i + 1).padStart(2, '0')}</span><span class="slot-name">${trick}</span>`;
+      results.appendChild(row);
+    });
+    countLabel.textContent = `${picks.length}/5`;
+  }
+
+  rollBtn.addEventListener('click', () => {
+    const picks = pickFive();
+    render(picks);
+  });
+</script>
+
+</body>
+</html>
